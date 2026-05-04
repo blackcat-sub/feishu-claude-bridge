@@ -21,9 +21,9 @@ Claude Code 会按顺序做这些事：
 2. `lark-cli config init --new` 创建飞书应用
 3. `lark-cli auth login` 弹浏览器授权权限
 4. 告诉你需要加哪些 bot 权限，你去飞书后台搜一下加上
-5. 把 `settings.example.json` 合并到你的 Claude Code 白名单
+5. 把 `settings.example.json` 合并到你的 Claude Code 配置（含白名单和审批 hook）
 6. 用 `monitor.sh` 启动消息监听
-7. 搞定，去飞书搜你的 Bot 发消息试试
+7. 搞定，去飞书搜你的 Bot 发消息试试。遇到高危操作会先飞书问你 yes/no
 
 事件订阅自动注册，不用管。tesseract 语言包约 650MB，只识别中英文的话装完问 Claude Code 怎么精简。
 
@@ -33,6 +33,7 @@ Claude Code 会按顺序做这些事：
 - 发语音 → 飞书妙记自动转写成文字再处理
 - 发图片 → tesseract 本地 OCR 提取文字再处理（支持 100+ 种语言）
 - 断网后监听自动重连，不用管
+- 高危操作远程审批（飞书回 yes/no 控制 Claude Code 是否执行）
 - 读飞书文档、搜通讯录、发消息
 
 ## 为什么不用服务器
@@ -52,6 +53,7 @@ Claude Code 会按顺序做这些事：
 | 文件 | 用途 |
 |------|------|
 | `setup.sh` | 一键装依赖（tesseract + lark-cli），已装的跳过 |
+| `approval-guard.sh` | 远程审批，高危操作飞书确认后执行 |
 | `monitor.sh` | 消息监听，断网自动重连 |
 | `feishu-stt.sh` | 语音转文字 |
 | `image-ocr.sh` | 图片 OCR 提取文字 |

@@ -15,7 +15,20 @@
       "Bash(lark-cli whoami *)",
       "Bash(lark-cli schema *)",
       "Bash(open *)",
-      "Bash(/path/to/feishu-stt.sh *)"
+      "Bash(/path/to/feishu-stt.sh *)",
+      "Bash(/path/to/approval-guard.sh *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /path/to/approval-guard.sh"
+          }
+        ]
+      }
     ]
   }
 }
