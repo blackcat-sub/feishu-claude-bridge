@@ -24,15 +24,14 @@ lark-cli config init --new    # 这条命令会自动在飞书后台帮你创建
 lark-cli auth login --scope "im:message.send_as_user im:chat:create_by_user drive:file:upload minutes:minutes.upload:write minutes:minutes:readonly minutes:minutes.artifacts:read minutes:minutes.transcript:export"
 ```
 
-### 2. 去飞书后台加权限
+### 2. 去飞书后台加 Bot 权限
 
-上一步 lark-cli 已经帮你建好了应用。打开 [飞书开发者后台](https://open.feishu.cn/app)，找到刚创建的应用，在「权限管理」里添加：
+上一步 lark-cli 已经帮你建好了应用、授权了用户权限。还剩最后一步：打开 [飞书开发者后台](https://open.feishu.cn/app)，找到刚创建的应用，在「权限管理」里给 Bot 加上这两个权限：
 
-Bot 权限：`im:message`、`im:message.p2p_msg:readonly`
+- `im:message`
+- `im:message.p2p_msg:readonly`
 
-用户权限：`drive:file:upload`、`minutes:minutes.upload:write`、`minutes:minutes:readonly`、`minutes:minutes.artifacts:read`、`minutes:minutes.transcript:export`
-
-然后在「事件与回调」里启用 `im.message.receive_v1`，发布一个新版本让配置生效。
+发布一个新版本，完事。事件订阅不用管——`lark-cli event consume` 启动时会自动注册。
 
 ### 3. 下载本项目文件
 
