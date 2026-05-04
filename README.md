@@ -16,63 +16,32 @@
 
 ## 怎么搭
 
-基本全程 AI 帮你搞定，你只需要做一件事。
+把这段话发给 Claude Code，它会帮你全部搞定：
 
-**把这段发给 Claude Code：**
+> 帮我搭建飞书 Claude Code 桥接，仓库在 https://github.com/blackcat-sub/feishu-claude-bridge
 
-> 帮我搭建飞书 Claude Code 桥接，仓库在 https://github.com/blackcat-sub/feishu-claude-bridge。先装 lark-cli 并建应用，把用户权限都授权好，bot 权限告诉我需要加什么我自己去后台加，然后配置好 Claude Code 白名单，最后把监听跑起来。
+Claude Code 会做的事情：用 lark-cli 创建飞书应用、弹出浏览器让你授权用户权限、配置 Claude Code 白名单、下载语音转文字脚本、启动消息监听。中间如果需要去飞书后台开什么权限，它会告诉你具体加哪个，你搜一下加上就行。
 
-然后你会经历：
+它具体执行的步骤大概是这样：
 
-1. Claude Code 跑 `lark-cli config init --new` 建应用，弹浏览器，你点确认
-2. Claude Code 跑 `lark-cli auth login` 授权用户权限，弹浏览器，你再点确认
-3. Claude Code 告诉你两个 bot 权限名，你去飞书后台搜一下加上、发布。这是你唯一需要动手的一步
-4. 其余（下载脚本、配置白名单、设环境变量、启动监听）Claude Code 全包
+1. `npm install -g @larksuite/cli` — 装 lark-cli
+2. `lark-cli config init --new` — 自动在飞书后台创建应用
+3. `lark-cli auth login --scope "im:message.send_as_user im:chat:create_by_user drive:file:upload minutes:minutes.upload:write minutes:minutes:readonly minutes:minutes.artifacts:read minutes:minutes.transcript:export"` — 弹浏览器授权用户权限，你点确认
+4. 如果需要 bot 权限（`im:message`、`im:message.p2p_msg:readonly`），它会告诉你，你去 [飞书开发者后台](https://open.feishu.cn/app) 搜一下加上
+5. 把 `settings.example.json` 合并到 `~/.claude/settings.local.json`
+6. `export LARK_CLI_NO_PROXY=1`
+7. 启动 WebSocket 监听，Bot 开始接收消息
 
-搞定了。去飞书搜你的 Bot 应用，发条消息试试。
-
-## 手动步骤清单（如果你不用 AI 搭）
-
-### 1. 安装 lark-cli 并创建应用
-
-```bash
-npm install -g @larksuite/cli
-lark-cli config init --new
-lark-cli auth login --scope "im:message.send_as_user im:chat:create_by_user drive:file:upload minutes:minutes.upload:write minutes:minutes:readonly minutes:minutes.artifacts:read minutes:minutes.transcript:export"
-```
-
-### 2. 去飞书后台加 Bot 权限
-
-打开 [飞书开发者后台](https://open.feishu.cn/app)，在「权限管理」里给 Bot 加上：
-
-- `im:message`
-- `im:message.p2p_msg:readonly`
-
-发布新版本。事件订阅不用管，`event consume` 启动时自动注册。
-
-### 3. 下载脚本
-
-```bash
-git clone https://github.com/blackcat-sub/feishu-claude-bridge.git
-cp feishu-claude-bridge/feishu-stt.sh ~/feishu-stt.sh && chmod +x ~/feishu-stt.sh
-```
-
-### 4. 配置 Claude Code 白名单
-
-把 `settings.example.json` 内容合并到 `~/.claude/settings.local.json`。
-
-### 5. 启动监听
-
-```bash
-export LARK_CLI_NO_PROXY=1
-lark-cli event consume im.message.receive_v1 --as bot \
-  --jq 'if .message_type=="text" then "TEXT|\(.chat_id)|\(.content)" elif .message_type=="audio" then "AUDIO|\(.chat_id)|\(.message_id)" else empty end' \
-  < <(tail -f /dev/null)
-```
+事件订阅（`im.message.receive_v1`）不用管，`event consume` 启动时自动注册。
 
 ## 语音怎么转文字
 
 飞书 speech_to_text API 需要特殊审批。项目用飞书妙记 API 做中转：下载语音 → 生成妙记 → 取逐字稿 → 删音频文件。全程公开 API，不占云空间。
+
+## 文件说明
+
+- `feishu-stt.sh` — 语音转文字脚本，给 message_id 出文字
+- `settings.example.json` — Claude Code 权限白名单模板
 
 ## 注意
 
