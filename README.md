@@ -14,53 +14,61 @@
 
 同类项目大多需要公网服务器接收飞书 Webhook。这套方案用 lark-cli 的 WebSocket 长连接，Bot 直连飞书服务器，消息走这条通道推下来。没有公网 IP、没有端口映射、没有 HTTPS 证书，全免了。
 
-## 快速开始
+## 怎么搭
+
+基本全程 AI 帮你搞定，你只需要做一件事。
+
+**把这段发给 Claude Code：**
+
+> 帮我搭建飞书 Claude Code 桥接，仓库在 https://github.com/blackcat-sub/feishu-claude-bridge。先装 lark-cli 并建应用，把用户权限都授权好，bot 权限告诉我需要加什么我自己去后台加，然后配置好 Claude Code 白名单，最后把监听跑起来。
+
+然后你会经历：
+
+1. Claude Code 跑 `lark-cli config init --new` 建应用，弹浏览器，你点确认
+2. Claude Code 跑 `lark-cli auth login` 授权用户权限，弹浏览器，你再点确认
+3. Claude Code 告诉你两个 bot 权限名，你去飞书后台搜一下加上、发布。这是你唯一需要动手的一步
+4. 其余（下载脚本、配置白名单、设环境变量、启动监听）Claude Code 全包
+
+搞定了。去飞书搜你的 Bot 应用，发条消息试试。
+
+## 手动步骤清单（如果你不用 AI 搭）
 
 ### 1. 安装 lark-cli 并创建应用
 
 ```bash
 npm install -g @larksuite/cli
-lark-cli config init --new    # 这条命令会自动在飞书后台帮你创建应用
+lark-cli config init --new
 lark-cli auth login --scope "im:message.send_as_user im:chat:create_by_user drive:file:upload minutes:minutes.upload:write minutes:minutes:readonly minutes:minutes.artifacts:read minutes:minutes.transcript:export"
 ```
 
 ### 2. 去飞书后台加 Bot 权限
 
-上一步 lark-cli 已经帮你建好了应用、授权了用户权限。还剩最后一步：打开 [飞书开发者后台](https://open.feishu.cn/app)，找到刚创建的应用，在「权限管理」里给 Bot 加上这两个权限：
+打开 [飞书开发者后台](https://open.feishu.cn/app)，在「权限管理」里给 Bot 加上：
 
 - `im:message`
 - `im:message.p2p_msg:readonly`
 
-发布一个新版本，完事。事件订阅不用管——`lark-cli event consume` 启动时会自动注册。
+发布新版本。事件订阅不用管，`event consume` 启动时自动注册。
 
-### 3. 下载本项目文件
+### 3. 下载脚本
 
 ```bash
 git clone https://github.com/blackcat-sub/feishu-claude-bridge.git
-cp feishu-stt.sh ~/feishu-stt.sh && chmod +x ~/feishu-stt.sh
+cp feishu-claude-bridge/feishu-stt.sh ~/feishu-stt.sh && chmod +x ~/feishu-stt.sh
 ```
 
-### 4. 配置 Claude Code 权限
+### 4. 配置 Claude Code 白名单
 
-把 `settings.example.json` 里的内容合并到 `~/.claude/settings.local.json`，记得把 STT 脚本路径改成你自己的。
+把 `settings.example.json` 内容合并到 `~/.claude/settings.local.json`。
 
-### 5. 设环境变量
+### 5. 启动监听
 
 ```bash
 export LARK_CLI_NO_PROXY=1
-```
-
-### 6. 启动监听
-
-```bash
 lark-cli event consume im.message.receive_v1 --as bot \
   --jq 'if .message_type=="text" then "TEXT|\(.chat_id)|\(.content)" elif .message_type=="audio" then "AUDIO|\(.chat_id)|\(.message_id)" else empty end' \
   < <(tail -f /dev/null)
 ```
-
-### 7. 在飞书里搜你的 Bot 应用，发消息
-
-搞定了。
 
 ## 语音怎么转文字
 
@@ -70,7 +78,6 @@ lark-cli event consume im.message.receive_v1 --as bot \
 
 - 电脑锁屏可以，不能休眠
 - 语音转写会产生妙记通知，可在飞书设置里关掉
-- 如果代理干扰飞书 API，设 `LARK_CLI_NO_PROXY=1`
 
 ## License
 
