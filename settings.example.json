@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lark-cli im *)",
+      "Bash(lark-cli auth *)",
+      "Bash(lark-cli event *)",
+      "Bash(lark-cli contact *)",
+      "Bash(lark-cli drive *)",
+      "Bash(lark-cli minutes *)",
+      "Bash(lark-cli vc *)",
+      "Bash(lark-cli docs *)",
+      "Bash(lark-cli api *)",
+      "Bash(lark-cli config *)",
+      "Bash(lark-cli doctor *)",
+      "Bash(lark-cli whoami *)",
+      "Bash(lark-cli schema *)",
+      "Bash(open *)",
+      "Bash(/path/to/feishu-stt.sh *)"
+    ]
+  }
+}
