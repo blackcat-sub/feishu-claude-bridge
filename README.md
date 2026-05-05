@@ -25,6 +25,8 @@ Claude Code 会按顺序做这些事：
 6. 用 `monitor.sh` 启动消息监听
 7. 搞定，去飞书搜你的 Bot 发消息试试
 
+克隆后仓库里自带了 `CLAUDE.md`，会告诉 Claude Code：用户一提到"飞书"就自动开启消息监听，不需要手动提醒。把仓库文件夹用 Claude Code 打开，或在仓库目录启动 Claude Code，这个行为就生效了。
+
 事件订阅自动注册，不用管。tesseract 语言包约 650MB，只识别中英文的话装完问 Claude Code 怎么精简。
 
 ## 能做什么
@@ -57,6 +59,7 @@ Claude Code 会按顺序做这些事：
 | `image-ocr.sh` | 图片 OCR 提取文字 |
 | `cleanup-minutes.sh` | 妙记管理 |
 | `settings.example.json` | Claude Code 白名单模板 |
+| `CLAUDE.md` | Claude Code 行为指令：用户提"飞书"自动开启双向对话 |
 
 ## 语音和图片怎么处理
 
